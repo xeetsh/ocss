@@ -28,10 +28,19 @@ file_prefix="ocss_"
 # where to save pictures locally (used as temp storage for
 # upload even if $save_file is "false"
 file_dir="$HOME/Pictures/ocss"
+#show images with the owncloud/nextcloud frame
+oc_frame='false'
 
 # command to run to edit screenshot before upload
 # leave commented out to disable functionality
 #edit_command="kolourpaint %img"
+
+#use yourls url shorting
+shorten_url='true'
+# yourls-api.php location (without trailing slash)
+yourlsapi='https://example.com/yourls'
+# yourls signature key
+yourlssigkey='yourkey'
 
 # timeout on upload connection in seconds
 upload_connect_timeout="5"
@@ -94,16 +103,37 @@ take_screenshot() {
   fi
 }
 
-upload_image() {
+function upload_image() {
   echo "Uploading '${1}'..."
   file_basename="$(basename $1)"
   curl --connect-timeout "$upload_connect_timeout" -m "$upload_timeout" --retry "$upload_retries" --insecure --user "$username:$password" -T "$1" "$oc_base/remote.php/webdav/$oc_ocss_dir_name/$file_basename"
-  response="$(curl --insecure --user "$username:$password" -X POST --data 'path='$oc_ocss_dir_name'/'$file_basename'&shareType=3' "$oc_base/ocs/v1.php/apps/files_sharing/api/v1/shares")"
+  response="$(curl --header "OCS-APIRequest: true" --user "$username:$password" -X POST --data 'path='$oc_ocss_dir_name'/'$file_basename'&shareType=3' "$oc_base/ocs/v1.php/apps/files_sharing/api/v1/shares")"
+  img_token=""
 
   # response contains <status>ok</status> when successful
-  if (echo "$response" | grep -q "<status>ok</status>"); then
-    # cutting the url from the xml response
-    img_url="$(echo "$response" | egrep -o "<url>.*</url>" | cut -d ">" -f 2 | cut -d "<" -f 1 | sed -e "s/\&amp;/\&/")"
+  if [[ "$response" == *"<status>ok</status>"* ]]; then
+    #check if the image should previewed standalone or with the owncloud/nextcloud frame
+    if [ "$frame" = "true" ]; then
+      # cutting the url from the xml response
+      img_url="$(echo "$response" | egrep -o "<url>.*</url>" | cut -d ">" -f 2 | cut -d "<" -f 1 | sed -e "s/\&amp;/\&/")"
+    else
+      # cutting the image token from the xml response and jigsaw everything together to a url
+      echo "$response"  > /tmp/response.txt
+      img_token="$(xml_grep 'token' "/tmp/response.txt" --text_only)"
+      rm  /tmp/response.txt
+      img_url="${oc_base}/index.php/apps/files_sharing/ajax/publicpreview.php?x=1920&y=592&a=true&t=${img_token}&scalingup=0"
+    fi
+
+    if [ "$shorten_url" = "true" ]; then
+
+        img_url=${img_url//&/%26}
+        img_url=${img_url//=/%3D}
+
+        lynx -dump "$yourlsapi""/yourls-api.php?signature=$yourlssigkey&action=shorturl&format=simply&url=$img_url" > /tmp/output
+        output=`awk -F# '{gsub(/ /,"");print ($img_url) }' < /tmp/output`
+        img_url=$output
+    fi
+
     echo "image link: $img_url"
 
     if [ "$copy_url" = "true" ]; then
@@ -115,7 +145,7 @@ upload_image() {
       echo "URL copied to clipboard"
     fi
 
-    notify ok "ocss: Upload done!" "$img_url"
+    notify ok "ocss: Upload done!!" "$img_url"
 
     if [ ! -z "$open_command" ]; then
       open_command=${open_command/\%img/$1}
@@ -131,6 +161,7 @@ upload_image() {
     notify error "ocss: Upload failed :(" "$err_msg"
   fi
 }
+
 
 which="$(which "$0")"
 
