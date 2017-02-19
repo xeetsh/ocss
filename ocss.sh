@@ -1,9 +1,11 @@
 #!/usr/bin/env sh
 
 # ocss - OwnCloud Screenshot Sharing
-# https://github.com/rage311/ocss
+# https://github.com/xeetsh/ocss
 
-# Based heavily on JonApps's imgur-screenshot script:
+# Based heavily on rage311's ocss script:
+# https://github.com/rage311/ocss
+# Which is Based heavily on JonApps's imgur-screenshot script:
 # https://github.com/JonApps/imgur-screenshot
 
 ############# CONFIG ############
@@ -70,8 +72,10 @@ if [ "$1" = "check" ]; then
     (which pbcopy &>/dev/null && echo "OK: found pbcopy") || echo "ERROR: pbcopy not found"
   else
     (which notify-send &>/dev/null && echo "OK: found notify-send") || echo "ERROR: notify-send (from libnotify-bin) not found"
-    (which scrot &>/dev/null && echo "OK: found scrot") || echo "ERROR: scrot not found"
+    (which maim &>/dev/null && echo "OK: found maim") || echo "ERROR: scrot not maim"
     (which xclip &>/dev/null && echo "OK: found xclip") || echo "ERROR: xclip not found"
+    (which slop &>/dev/null && echo "OK: found slop") || echo "ERROR: slop not found"
+    (which lynx &>/dev/null && echo "OK: found lynx") || echo "ERROR: lynx not found"
   fi
   (which curl &>/dev/null && echo "OK: found curl") || echo "ERROR: curl not found"
   exit 0
