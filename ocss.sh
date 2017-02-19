@@ -93,9 +93,9 @@ take_screenshot() {
   echo "Please select area"
   is_mac || sleep 0.1 # https://bbs.archlinux.org/viewtopic.php?pid=1246173#p1246173
 
-  if ! (scrot -s "$1" || screencapture -s "$1"); then #takes a screenshot with selection
+  if ! (maim -s "$1" || screencapture -s "$1"); then #takes a screenshot with selection
     echo "Couldn't make selective shot (mouse trapped?). Trying to grab active window instead"
-    if ! (scrot -u "$1" &>/dev/null || screencapture -oWa "$1" &>/dev/null); then
+    if ! (maim -u "$1" &>/dev/null || screencapture -oWa "$1" &>/dev/null); then
       echo "Error for image '$1'!" | tee -a "$log_file"
       notify error "Something went wrong :(" "Information has been logged"
       exit 1
