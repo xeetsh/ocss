@@ -103,7 +103,7 @@ take_screenshot() {
   fi
 }
 
-function upload_image() {
+upload_image() {
   echo "Uploading '${1}'..."
   file_basename="$(basename $1)"
   curl --connect-timeout "$upload_connect_timeout" -m "$upload_timeout" --retry "$upload_retries" --insecure --user "$username:$password" -T "$1" "$oc_base/remote.php/webdav/$oc_ocss_dir_name/$file_basename"
@@ -145,7 +145,7 @@ function upload_image() {
       echo "URL copied to clipboard"
     fi
 
-    notify ok "ocss: Upload done!!" "$img_url"
+    notify ok "ocss: Upload done!" "$img_url"
 
     if [ ! -z "$open_command" ]; then
       open_command=${open_command/\%img/$1}
@@ -161,7 +161,6 @@ function upload_image() {
     notify error "ocss: Upload failed :(" "$err_msg"
   fi
 }
-
 
 which="$(which "$0")"
 
