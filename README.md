@@ -1,12 +1,14 @@
 ocss
 ====
 
-OwnCloud Screenshot Sharing
+OwnCloud Screenshot Sharing (based on rage311's work)
 
-A script to make sharing a screenshot publicly via an Owncloud server easy.
-
-This script takes a screenshot (of a window or rectangular area), uploads it to the configured OwnCloud server, enables public sharing by URL on the uploaded screenshot, and copies the URL to your clipboard.
-
+Features:
+  - Taking a screenshot from a selected window or area
+  - Automatically uploading this screenshot to Owncloud/Nextcloud
+  - Creating a shared link in Owncloud/Nextcloud
+  - Shorting the link via Yourls
+  - Copying the link in your clipboard
 
 Dependencies:
 -------------
@@ -16,11 +18,16 @@ Shared:
   - grep
 
 Linux:
-  - scrot
+  - maim
+  - slop
   - notify-send
   - xclip
+  - lynx
 
 OS X:
+  At the moment I can't test the OS X compatiblity so i don't know if the script is working there.
+  A problem might occure if you use Yourls URL shorting because of Lynx. Maybe look into using Lynxlet for OS X.
+  
   - terminal-notifier
   - screencapture
   - pbcopy
