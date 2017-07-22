@@ -23,14 +23,7 @@ Linux:
   - notify-send
   - xclip
   - lynx
-
-OS X:
-  At the moment I can't test the OS X compatiblity so i don't know if the script is working there.
-  A problem might occure if you use Yourls URL shorting because of Lynx. Maybe look into using Lynxlet for OS X.
-  
-  - terminal-notifier
-  - screencapture
-  - pbcopy
+  - perl-xml-twig
 
 
 Instructions:
@@ -43,4 +36,4 @@ Run it with the "check" argument to check if all required dependencies exist.
 
 `$ ./ocss.sh check`
 
-I haven't tested this with OS X, but it's mostly the same code base as imgur-screenshot and that is purported to work in OS X, so it SHOULD work.
+
